@@ -1,14 +1,12 @@
 {
   "name": "quick-move",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "rhewid",
   "description": "Quality-of-life item moving: reliable fast double click in NPC shops, plus Ctrl+click to move items between Inventory, Storage, Cart, Equipment, Vending, Trade and Rodex.",
-
   "requires": {
     "app": ">=1.4.5",
     "era": "any"
   },
-
   "settings": [
     {
       "key": "double_click_ms",

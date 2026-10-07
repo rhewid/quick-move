@@ -5,6 +5,12 @@
 // click, so fast clicking does nothing. This plugin counts the clicks itself,
 // fires the client's own dblclick on the item, and hides the native one so an
 // item is never moved twice.
+//
+// Since app 1.5 the shop windows no longer listen for "dblclick": they count two
+// quick clicks themselves. A synthetic "dblclick" does nothing there any more, so
+// Ctrl+click also sends two clicks (marked, so this plugin ignores its own). Older
+// clients ignore the clicks and react to the "dblclick", so one Ctrl+click moves
+// the item exactly once on both.
 
 const SHOP = new Set(['NpcStore', 'VendingShop', 'CashShop', 'Vending']);
 const TRANSFER = /^(Inventory|Storage|CartItems)/;   // Ctrl+click uses the client's Alt+right-click transfer
@@ -39,10 +45,19 @@ export default function init(parameters, api) {
 		if (attached.has(component.host) || !(shop || transfer || equip || rodex)) return;
 		let last = null;          // { key, time } of the previous plain click
 
-		const move = item => item.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
+		const doubleClick = item => item.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
+		// what Ctrl+click sends: the "dblclick" older clients wait for, plus the two clicks the 1.5+ shop windows count
+		const move = item => {
+			doubleClick(item);
+			for (let i = 0; i < 2; i++) {
+				const synthetic = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
+				synthetic.quickMove = true;
+				item.dispatchEvent(synthetic);
+			}
+		};
 
 		const click = event => {
-			if (event.button !== 0) return;
+			if (event.quickMove || event.button !== 0) return;
 			const item = event.target.closest?.(ITEM);
 			if (!item) return;
 
@@ -77,7 +92,8 @@ export default function init(parameters, api) {
 			const now = performance.now();
 			if (last && last.key === key && now - last.time <= gap) {
 				last = null;
-				move(item);
+				// only the "dblclick": a 1.5+ shop already counted these two real clicks itself
+				doubleClick(item);
 			} else {
 				last = { key, time: now };
 			}

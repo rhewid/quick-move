@@ -8,3 +8,12 @@ A client mod for [Ragnarok Offline](https://github.com/Flux159/ragnarokoffline.a
 ## Install
 
 Copy the `quick-move` folder to `%APPDATA%\Ragnarok Offline\state\mods`, or use Settings → Mods → Add mod from folder. Restart the client after changing settings.
+
+## Compatibility
+
+Works with Ragnarok Offline 1.4.5 and newer, including 1.5.x. The shop windows changed in 1.5 (they now count two quick clicks themselves instead of listening for a double click event); version 1.0.1 handles both.
+
+## Changelog
+
+- **1.0.1** Fixed Ctrl+click in the NPC sell window and the other shop windows on app 1.5 and newer, where it did nothing. Ctrl+click now sends both the double click older clients wait for and the two quick clicks the newer shop windows count. Fast double click and the storage / cart / equipment / trade / Rodex moves are unchanged.
+- **1.0.0** First release.
